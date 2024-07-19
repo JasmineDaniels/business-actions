@@ -9,6 +9,12 @@
     "start-client": "parcel src/index.html --open",
     "test": "jest"
   },
+  "pkg": {
+    "scripts": "build/**/*.js",
+    "assets": ["src/**/*", "dist/**/**"],
+    "targets": [ "latest-linux-arm64"],
+    "outputPath": "dist"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

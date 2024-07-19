@@ -9,3 +9,4 @@ dist
 .npmrc
 build.yml
 test.yml
+server.exe
