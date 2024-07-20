@@ -44,11 +44,12 @@ steps:
     name: "Install NVM"
     command: |
       cd ${OCI_WORKSPACE_DIR}
+      yum update -y
       # install nvm
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
       export NVM_DIR="$HOME/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-      yum -y nvm install v20.11.1
+      nvm install v20.11.1
       echo "NODE VERSION: ${node -v}"
       echo "NPM VERSION: ${npm -v}"
 
