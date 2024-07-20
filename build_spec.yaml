@@ -18,7 +18,7 @@ env:
   exportedVariables:
     - BUILDRUN_HASH
     - ARTIFACT_NAME
-    - ARTIFACT_REPO_OCID_FromVault
+    - ARTIFACT_REPO_OCID
 
 
 steps:
