@@ -117,18 +117,18 @@ steps:
         runAs: root
 
   - type: Command
-      timeoutInSeconds: 1200
-      name: "Build a native executable"
-      command: |
-        cd ${OCI_WORKSPACE_DIR}
-        pkg server.js --target latest-linux-arm64
-      onFailure:
-        - type: Command
-          command: |
-            echo "Handling Failure"
-            echo "Failure successfully handled"
-          timeoutInSeconds: 80
-          runAs: root
+    timeoutInSeconds: 1200
+    name: "Build a native executable"
+    command: |
+      cd ${OCI_WORKSPACE_DIR}
+      pkg server.js --target latest-linux-arm64
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 80
+        runAs: root
 
 outputArtifacts:
   - name: app_native_executable
