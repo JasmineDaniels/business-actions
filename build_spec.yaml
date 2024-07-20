@@ -117,7 +117,7 @@ steps:
         runAs: root
 
   - type: Command
-      timeoutInSeconds: 600
+      timeoutInSeconds: 1200
       name: "Build a native executable"
       command: |
         cd ${OCI_WORKSPACE_DIR}
@@ -127,7 +127,7 @@ steps:
           command: |
             echo "Handling Failure"
             echo "Failure successfully handled"
-          timeoutInSeconds: 40
+          timeoutInSeconds: 80
           runAs: root
 
 outputArtifacts:
