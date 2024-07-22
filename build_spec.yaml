@@ -43,7 +43,7 @@ steps:
     timeoutInSeconds: 600
     name: "Install Prereqs"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       # install nvm
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
       export NVM_DIR="$HOME/.nvm"
@@ -67,7 +67,7 @@ steps:
       echo "PATH:" $PATH
       echo *
       echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       echo *
     onFailure:
       - type: Command
@@ -81,7 +81,7 @@ steps:
     timeoutInSeconds: 600
     name: "NPM install"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       npm install
     onFailure:
       - type: Command
@@ -95,7 +95,7 @@ steps:
     timeoutInSeconds: 600
     name: "Install PKG"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       npm i -g pkg
     onFailure:
       - type: Command
@@ -109,7 +109,7 @@ steps:
     timeoutInSeconds: 600
     name: "NPM build"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       npm run build
     onFailure:
       - type: Command
@@ -123,7 +123,7 @@ steps:
     timeoutInSeconds: 1200
     name: "Run Tests"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       npm test
     onFailure:
       - type: Command
@@ -137,7 +137,7 @@ steps:
     timeoutInSeconds: 1200
     name: "Build a native executable"
     command: |
-      cd ${OCI_WORKSPACE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
       pkg server.js --target latest-linux-arm64
     onFailure:
       - type: Command
@@ -150,7 +150,7 @@ steps:
 outputArtifacts:
   - name: app_native_executable
     type: BINARY
-    location: ${OCI_WORKSPACE_DIR}/server
+    location: ${OCI_PRIMARY_SOURCE_DIR}/server
 
   - name: deployment_spec
     type: BINARY
