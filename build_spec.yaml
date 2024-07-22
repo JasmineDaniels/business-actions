@@ -59,23 +59,6 @@ steps:
           echo "Failure successfully handled"
         timeoutInSeconds: 40
         runAs: root
-
-  - type: Command
-    timeoutInSeconds: 600
-    name: "List Files"
-    command: |
-      echo "PATH:" $PATH
-      echo *
-      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
-      cd ${OCI_PRIMARY_SOURCE_DIR}
-      echo *
-    onFailure:
-      - type: Command
-        command: |
-          echo "Handling Failure"
-          echo "Failure successfully handled"
-        timeoutInSeconds: 40
-        runAs: root
   
   - type: Command
     timeoutInSeconds: 600
@@ -107,10 +90,27 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
+    name: "List Files"
+    command: |
+      echo "PATH:" $PATH
+      echo *
+      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
+      echo *
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 40
+        runAs: root
+
+  - type: Command
+    timeoutInSeconds: 600
     name: "NPM build"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      npm run build
+      npm rebuild
     onFailure:
       - type: Command
         command: |
