@@ -38,6 +38,21 @@ steps:
           echo "Failure successfully handled"
         timeoutInSeconds: 400
         runAs: root
+
+  - type: Command
+    timeoutInSeconds: 600
+    name: "Install NPM"
+    command: |
+      cd ${OCI_WORKSPACE_DIR}
+      yum -y install npm
+
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 40
+        runAs: root
   
   - type: Command
     timeoutInSeconds: 600
