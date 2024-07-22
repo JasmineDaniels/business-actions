@@ -138,7 +138,7 @@ steps:
     name: "Build a native executable"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      pkg server.js --target latest-linux-arm64
+      pkg server.js --target node16-linux-arm64
     onFailure:
       - type: Command
         command: |
