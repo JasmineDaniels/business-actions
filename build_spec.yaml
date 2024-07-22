@@ -48,7 +48,8 @@ steps:
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
       export NVM_DIR="$HOME/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-      nvm install lts/erbium
+      nvm install --lts
+      nvm use --lts
       echo "NODE VERSION: $(node -v)"
       echo "NPM VERSION: $(npm -v)"
 
@@ -80,6 +81,20 @@ steps:
     command: |
       cd ${OCI_WORKSPACE_DIR}
       npm i -g pkg
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 40
+        runAs: root
+  
+  - type: Command
+    timeoutInSeconds: 600
+    name: "List Files"
+    command: |
+      cd ${OCI_WORKSPACE_DIR}
+      echo *
     onFailure:
       - type: Command
         command: |
