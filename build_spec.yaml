@@ -41,10 +41,16 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "Install NPM"
+    name: "Install Prereqs"
     command: |
       cd ${OCI_WORKSPACE_DIR}
-      yum -y install npm
+      # install nvm
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+      nvm install lts/erbium
+      echo "NODE VERSION: $(node -v)"
+      echo "NPM VERSION: $(npm -v)"
 
     onFailure:
       - type: Command
