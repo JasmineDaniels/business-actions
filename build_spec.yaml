@@ -64,6 +64,9 @@ steps:
     timeoutInSeconds: 600
     name: "List Files"
     command: |
+      echo "PATH:" $PATH
+      echo *
+      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
       cd ${OCI_WORKSPACE_DIR}
       echo *
     onFailure:
