@@ -90,7 +90,7 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "NPM build"
+    name: "Rebuild App"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
       npm rebuild
@@ -104,13 +104,10 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "List Files"
+    name: "NPM build"
     command: |
-      echo "PATH:" $PATH
-      echo *
-      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      echo *
+      npm run build
     onFailure:
       - type: Command
         command: |
@@ -125,6 +122,23 @@ steps:
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
       npm test
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 40
+        runAs: root
+  
+  - type: Command
+    timeoutInSeconds: 600
+    name: "List Files"
+    command: |
+      echo "PATH:" $PATH
+      echo *
+      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
+      echo *
     onFailure:
       - type: Command
         command: |
