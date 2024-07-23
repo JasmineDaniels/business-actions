@@ -1,8 +1,8 @@
-name: Deploy
+name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "action-build" ]
   
 jobs:
   build:
@@ -17,11 +17,32 @@ jobs:
           run: |
             npm ci
             npm run build
+
+        - name: Run Tests
+          run: |
+            npm test
+
         - name: PKG Install
           run: | 
             npm i -g pkg
+
         - name: Build Executable
           run: |
             pkg server.js --target node16-linux-arm64
+
+        - name: Create a temporary artifact folder
+          run: mkdir downloads  
+
+        - name: Add executable to temp folder
+          run: |
+            mv server downloads/
+            echo $(ls downloads)
+
+        - name: Use the Upload Artifact GitHub Action
+          uses: actions/upload-artifact@v4
+          with: 
+            name: assets-for-download
+            path: downloads 
+            overwrite: true
 
   
