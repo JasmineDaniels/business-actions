@@ -90,20 +90,6 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "Rebuild App"
-    command: |
-      cd ${OCI_PRIMARY_SOURCE_DIR}
-      npm rebuild
-    onFailure:
-      - type: Command
-        command: |
-          echo "Handling Failure"
-          echo "Failure successfully handled"
-        timeoutInSeconds: 40
-        runAs: root
-
-  - type: Command
-    timeoutInSeconds: 600
     name: "NPM build"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
