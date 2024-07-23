@@ -18,6 +18,14 @@ jobs:
             npm ci
             npm run build
 
+        
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+              # the node version for the setup-node action
+            node-version: 16.x
+        - run: npm test
+
         - name: PKG Install
           run: | 
             npm i -g pkg
