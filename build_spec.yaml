@@ -92,11 +92,18 @@ steps:
     timeoutInSeconds: 600
     name: "List Files"
     command: |
+      echo root
       echo *
       echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
+      cd ${OCI_PRIMARY_SOURCE_DIR}
+      echo *
+
+      cd ..
+
+      echo WORKSPACE: ${OCI_WORKSPACE_DIR}
       cd ${OCI_WORKSPACE_DIR}
       echo *
-      
+
     onFailure:
       - type: Command
         command: |
