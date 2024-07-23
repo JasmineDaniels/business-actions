@@ -7,6 +7,6 @@ dist
 .parcel-cache
 .env
 .npmrc
-build.yml
-test.yml
 server.exe
+demo_build.yml
+demo_test.yml
