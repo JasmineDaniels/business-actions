@@ -10,10 +10,8 @@
     "test": "jest"
   },
   "pkg": {
-    "scripts": "build/**/*.js",
     "assets": ["src/**/*", "dist/**/**"],
-    "targets": [ "latest-linux-arm64"],
-    "outputPath": "dist"
+    "targets": [ "node16-linux-arm64"]
   },
   "keywords": [],
   "author": "",
