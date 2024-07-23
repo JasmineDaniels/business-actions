@@ -90,13 +90,10 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "List Files"
+    name: "NPM build"
     command: |
-      echo "PATH:" $PATH
-      echo *
-      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      echo *
+      npm rebuild
     onFailure:
       - type: Command
         command: |
@@ -107,10 +104,13 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
-    name: "NPM build"
+    name: "List Files"
     command: |
+      echo "PATH:" $PATH
+      echo *
+      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      npm rebuild
+      echo *
     onFailure:
       - type: Command
         command: |
