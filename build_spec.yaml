@@ -93,6 +93,7 @@ steps:
     name: "NPM build"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
+      ulimit -S -c unlimited
       npm run build
     onFailure:
       - type: Command
