@@ -90,10 +90,26 @@ steps:
 
   - type: Command
     timeoutInSeconds: 600
+    name: "List Files"
+    command: |
+      echo *
+      echo PRIMARY: ${OCI_PRIMARY_SOURCE_DIR}
+      cd ${OCI_WORKSPACE_DIR}
+      echo *
+      
+    onFailure:
+      - type: Command
+        command: |
+          echo "Handling Failure"
+          echo "Failure successfully handled"
+        timeoutInSeconds: 40
+        runAs: root
+
+  - type: Command
+    timeoutInSeconds: 600
     name: "NPM build"
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      ulimit -S -c unlimited
       npm run build
     onFailure:
       - type: Command
