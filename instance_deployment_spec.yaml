@@ -4,8 +4,11 @@ shell: bash
 env:
   variables:
     # Local variables
+    ARTIFACT_FILE_NAME: "server"
   vaultVariables:
     # Vault variables
+    ARTIFACT_REPO_OCID_FromVault: ocid1.vaultsecret.oc1.iad.amaaaaaaz2fdaxqaqrxjimixp3adkjvjfz2udbv4segyhzhlbyhzo5dzovcq
+
 files:
   # This section is to define how the files in the artifact shall
   # be put on the compute instance

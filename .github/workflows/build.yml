@@ -10,7 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-       
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Set up OCI CLI
+          run: |
+            curl -Lo oci-cli.zip https://github.com/oracle/oci-cli/releases/latest/download/oci-cli-*-linux-*.zip
+            unzip oci-cli.zip -d oci-cli
+            ./oci-cli/bin/oci --version
+    
+        - name: Configure OCI CLI
+          env:
+            OCI_CLI_AUTH: api_key
+            OCI_CLI_USER: ${{ secrets.OCI_USER }}
+            OCI_CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+            OCI_CLI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
+            OCI_CLI_TENANCY: ${{ secrets.OCI_TENANCY }}
+            OCI_CLI_REGION: ${{ secrets.OCI_REGION }}
+          run: |
+            mkdir -p ~/.oci
+            echo $OCI_CLI_KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
+            chmod 600 ~/.oci/oci_api_key.pem
+            oci setup config
+
         - uses: actions/checkout@v4
         - uses: actions/setup-node@v4
           with:
@@ -26,21 +48,76 @@ jobs:
 
         - name: Build Executable
           run: |
-            pkg server.js --target node16-linux-arm64
+            pkg server.js --target node16-linux-arm64 
+        
+        - name: Push Executable to Artifact Registry 
+          id: create-artifact 
+          env: 
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
+          run: | 
+            ARTIFACT_ID=$(oci devops deploy-artifact create-inline-artifact \ 
+            --project-id $DEVOPS_PROJECT_ID \ 
+            --argument-substitution-mode true \
+            --display-name "exec-app" \ 
+            --artifact-type GENERIC_FILE \ 
+            --base64-encoded-content "$(base64 ./server)" \ 
+            --query 'data.id' --raw-output) 
+            echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
 
-        - name: Create a temporary artifact folder
-          run: mkdir downloads  
+        - name: Create deployment spec in OCI DevOps 
+          id: create-deployment-spec 
+          env: 
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
+            INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
+          run: | 
+            cat <<EOF > instance_deployment_spec.yml \
+            instanceConfiguration:  \
+            description: "Deployment specification for OCI instance group" \
+            instanceGroupId: "$INSTANCE_GROUP_ID" \
+            deploymentName: "Deploy Executable" \
+            artifactSources: \
+            - artifactType: "GENERIC_FILE" artifactId: "$ARTIFACT_ID" \
+            lifecycle: \
+            install: \
+            - description: "Download and install the executable" \
+            run: \
+            - echo "Downloading the executable..." \
+            - if [[ -f server == 1 ]]; rm -fr server ; fi
+            - oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
+            export OCI_CLI_AUTH=instance_principal
+            - chmod +x server \
+            start: \
+            - description: "Start the executable" \
+            run: \
+            - echo "Starting the executable..." \
+            - nohup server & EOF DEPLOYMENT_SPEC_ID=$(oci devops deploy-artifact create-generic-artifact \ 
+            --project-id $DEVOPS_PROJECT_ID \ 
+            --display-name "InstanceDeploymentSpec" \ 
+            --artifact-type GENERIC_FILE \ 
+            --base64-encoded-content "$(base64 ./instance_deployment_spec.yml)" \ 
+            --query 'data.id' --raw-output) \
+            echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
 
-        - name: Add executable to temp folder
+        - name: Trigger OCI DevOps Pipeline
+          env:
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}
+            DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
+            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }} 
           run: |
-            mv server downloads/
-            echo $(ls downloads)
+            echo "Triggering OCI DevOps Pipeline..."
+            oci devops deployment create-pipeline-deployment \
+            --pipeline-id $DEVOPS_PIPELINE_ID \
+            --display-name "GitHub Actions Triggered Deployment" \
+            --artifact-override-arguements '[{"artifact-id":"'$ARTIFACT_ID'", "artifact-source":{"source-type":"INLINE"} }]' \
+            --deployment-arguements '[{"artifact-id":"'$DEPLOYMENT_SPEC_ID'", "artifact-source":{"source-type":"INLINE"}}]'
+        
 
-        - name: Use the Upload Artifact GitHub Action
-          uses: actions/upload-artifact@v4
-          with: 
-            name: assets-for-download
-            path: downloads 
-            overwrite: true
+        - name: Cleanup
+          run: |
+            rm -rf ~/.oci/oci_api_key.pem
+
+            
 
   

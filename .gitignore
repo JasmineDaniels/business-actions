@@ -11,4 +11,4 @@ server.exe
 deploy.yml
 demo_build.yml
 demo_test.yml
-test.yml
+testing.yml
