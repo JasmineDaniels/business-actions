@@ -15,9 +15,7 @@ jobs:
 
         - name: Set up OCI CLI
           run: |
-            curl -Lo oci-cli.zip https://github.com/oracle/oci-cli/releases/latest/download/oci-cli-*-linux-*.zip
-            unzip oci-cli.zip -d oci-cli
-            ./oci-cli/bin/oci --version
+            bash -c --accept=all=defaults "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)" 
     
         - name: Configure OCI CLI
           env:
