@@ -27,7 +27,8 @@ jobs:
             OCI_CLI_REGION: ${{ secrets.OCI_REGION }}
           run: |
             mkdir -p ~/.oci
-            echo $OCI_CLI_KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
+            TEMP_KEY_FILE=$OCI_KEY_FILE
+            echo $TEMP_KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
             oci setup config
 
