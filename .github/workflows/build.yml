@@ -11,12 +11,12 @@ jobs:
 
     steps:
         - name: Checkout code
-          uses: actions/checkout@v4
+          uses: actions/checkout@v3
 
         - name: Set up OCI CLI
           run: |
             curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            echo ${{ secrets.USERPWD }} | sudo -S /tmp/install.sh --accept-all-defaults
+            sudo /tmp/install.sh --accept-all-defaults
             echo $(oci -v)
     
         - name: Configure OCI CLI
