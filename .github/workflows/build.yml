@@ -16,7 +16,7 @@ jobs:
         - name: Set up OCI CLI
           run: |
             curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            ./install.sh --accept-all-defaults
+            sudo ./install.sh --accept-all-defaults
             echo $(oci -v)
     
         - name: Configure OCI CLI
