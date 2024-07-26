@@ -63,6 +63,7 @@ jobs:
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
             oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config
+            echo 'ARTIFACT_ID=${{ steps.create-artifact.outputs.id }}' >> '$GITHUB_ENV'
 
 
         - name: Create deployment spec in OCI DevOps 
@@ -85,7 +86,7 @@ jobs:
             - description: "Download and install the executable" \
             run: \
             - echo "Downloading the executable..." \
-            - if [[ -f server == 1 ]]; rm -fr server ; fi
+            - if [[ -f server == 1 ]]; rm -fr server ; fi \
             - oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
             export OCI_CLI_AUTH=instance_principal
             - chmod +x server \
