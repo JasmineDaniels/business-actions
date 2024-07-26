@@ -15,10 +15,7 @@ jobs:
 
         - name: Set up OCI CLI
           run: |
-            sudo bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
-            echo $(ls -la)
-            sudo chmod a+x install.sh
-            ./install.sh --accept-all-defaults
+            python3 -m pip install --user oci-cli
             echo $(oci -v)
     
         - name: Configure OCI CLI
