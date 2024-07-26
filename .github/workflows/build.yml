@@ -34,7 +34,7 @@ jobs:
             echo [DEFAULT] > ~/.oci/oci_cli_rc
             echo user=$CLI_USER >> ~/.oci/oci_cli_rc
             echo fingerprint=$CLI_FINGERPRINT >> ~/.oci/oci_cli_rc
-            echo key_file="~/.oci/oci_api_key.pem" >> ~/.oci/oci_cli_rc
+            echo key_file=~/.oci/oci_api_key.pem >> ~/.oci/oci_cli_rc
             echo tenancy=$CLI_TENANCY >> ~/.oci/oci_cli_rc
             echo region=$CLI_REGION >> ~/.oci/oci_cli_rc
             echo pass_phrase=$OCI_PASS_PHRASE >> ~/.oci/oci_cli_rc
