@@ -28,7 +28,8 @@ jobs:
             CLI_REGION: ${{ secrets.OCI_REGION }}
             OCI_PASSPHRASE: ${{ secrets.OCI_PWD }}
           run: |
-            mkdir -p ~/.oci
+            mkdir ~/.oci
+            echo $(ls)
             cat $KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
             echo [DEFAULT] > ~/.oci/oci_cli_rc
@@ -39,7 +40,7 @@ jobs:
             echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
             echo $(ls -la)
             cat ~/.oci/oci_cli_rc > ~/.oci/config
-            echo ~/.oci/oci_cli_rc
+            cat ~/.oci/oci_cli_rc
             cat ~/.oci/config
             chmod 600 ~/.oci/config
 
