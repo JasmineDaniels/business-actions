@@ -73,33 +73,36 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: | 
-            echo oci artifacts generic artifact list --all
-            cat <<EOF > instance_deployment_spec.yml \
-            instanceConfiguration:  \
-            description: "Deployment specification for OCI instance group" \
-            instanceGroupId: "$INSTANCE_GROUP_ID" \
-            deploymentName: "Deploy Executable" \
-            artifactSources: \
-            - artifactType: "GENERIC_FILE" artifactId: "$ARTIFACT_ID" \
-            lifecycle: \
-            install: \
-            - description: "Download and install the executable" \
-              run: \
-            - echo "Downloading the executable..." \
+            oci artifacts generic artifact list --all
+            cat <<EOF > instance_deployment_spec.yml 
+            instanceConfiguration:  
+            description: "Deployment specification for OCI instance group" 
+            instanceGroupId: "$INSTANCE_GROUP_ID" 
+            deploymentName: "Deploy Executable" 
+            artifactSources: 
+            - artifactType: "GENERIC_FILE" artifactId: "$ARTIFACT_ID" 
+            lifecycle: 
+            install: 
+            - description: "Download and install the executable" 
+              run: 
+            - echo "Downloading the executable..." 
             - oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
             export OCI_CLI_AUTH=instance_principal
-            - chmod +x server \
-            start: \
-            - description: "Start the executable" \
-            run: \
-            - echo "Starting the executable..." \
-            - nohup server & EOF DEPLOYMENT_SPEC_ID=$(oci devops deploy-artifact create-generic-artifact \ 
-            --project-id $DEVOPS_PROJECT_ID \ 
+            - chmod +x server 
+            start: 
+            - description: "Start the executable" 
+              run: 
+            - echo "Starting the executable..." 
+            - nohup server & EOF 
+            DEPLOYMENT_SPEC_ID=$(oci artifacts generic artifact upload-by-path \ 
+            --repository-id $AR_REPO_ID \ 
             --display-name "InstanceDeploymentSpec" \ 
-            --artifact-type GENERIC_FILE \ 
-            --base64-encoded-content "$(base64 ./instance_deployment_spec.yml)" \ 
+            --artifact-path instance_deployment_spec.yml \ 
+            --content-body instance_deployment_spec.yml \ 
             --query 'data.id' --raw-output) \
+            
             echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
+            cat instance_deployment_spec.yml
 
         - name: Trigger OCI DevOps Pipeline
           env:
