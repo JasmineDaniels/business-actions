@@ -17,7 +17,7 @@ jobs:
           run: |
             sudo curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
             echo $(ls -la)
-            chmod +x install.sh
+            sudo chmod a+x install.sh
             ./install.sh --accept-all-defaults
             echo $(oci -v)
     
