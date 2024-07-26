@@ -23,7 +23,7 @@ jobs:
             CLI_AUTH: api_key
             CLI_USER: ${{ secrets.OCI_USER }}
             CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
-            OCI_CLI_KEY_FILE: ${{ secrets.OCI_CLI_KEY_FILE }}
+            KEY_FILE: ${{ secrets.OCI_CLI_KEY_FILE }}
             CLI_TENANCY: ${{ secrets.OCI_TENANCY }}
             CLI_REGION: ${{ secrets.OCI_REGION }}
           run: |
@@ -34,7 +34,7 @@ jobs:
             echo [DEFAULT] > ~/.oci/oci_cli_rc
             echo user="$CLI_USER" >> ~/.oci/oci_cli_rc
             echo fingerprint="$CLI_FINGERPRINT" >> ~/.oci/oci_cli_rc
-            echo key_file=.oci/oci_api_key.pem >> ~/.oci/oci_cli_rc
+            echo key_file=~/.oci/oci_api_key.pem >> ~/.oci/oci_cli_rc
             echo tenancy="$CLI_TENANCY" >> ~/.oci/oci_cli_rc
             echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
             cat ~/.oci/oci_cli_rc > ~/.oci/config
@@ -65,7 +65,7 @@ jobs:
             CLI_AUTH: api_key
             CLI_USER: ${{ secrets.OCI_USER }}
             CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
-            OCI_CLI_KEY_FILE: ${{ secrets.OCI_CLI_KEY_FILE }}
+            OCI_CLI_KEY_FILE: ~/.oci/oci_api_key.pem
             CLI_TENANCY: ${{ secrets.OCI_TENANCY }}
             CLI_REGION: ${{ secrets.OCI_REGION }}
             OCI_PASSPHRASE: ${{ secrets.OCI_PWD }} 
