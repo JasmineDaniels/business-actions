@@ -59,13 +59,11 @@ jobs:
           id: create-artifact 
           env: 
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
-          run: | 
+          run: |
             oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID \
-            --display-name "serve-exec" --artifact-type GENERIC_FILE \
-            --base64-encoded-content "$(base64 ./server)" \
-            /
-            echo oci devops deploy-artifact list --all
-            echo "ARTIFACT_ID="ARTIFACT_ID" >> $GITHUB_ENV
+              --display-name "serve-exec" --artifact-type GENERIC_FILE \
+              --base64-encoded-content "$(base64 ./server)" \
+              /
 
         - name: Create deployment spec in OCI DevOps 
           id: create-deployment-spec 
@@ -74,6 +72,7 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: | 
+            echo oci devops deploy-artifact list --all
             cat <<EOF > instance_deployment_spec.yml \
             instanceConfiguration:  \
             description: "Deployment specification for OCI instance group" \
