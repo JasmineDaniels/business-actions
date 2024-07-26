@@ -73,7 +73,6 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: | 
-            oci artifacts generic artifact list --all
             cat <<EOF > instance_deployment_spec.yml 
             instanceConfiguration:  
             description: "Deployment specification for OCI instance group" 
