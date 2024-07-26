@@ -28,21 +28,21 @@ jobs:
             CLI_REGION: ${{ secrets.OCI_REGION }}
             OCI_PASSPHRASE: ${{ secrets.OCI_PWD }}
           run: |
-            mkdir ~/.oci
+            mkdir .oci
             echo $(ls)
-            cat $KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
-            chmod 600 ~/.oci/oci_api_key.pem
-            echo [DEFAULT] > ~/.oci/oci_cli_rc
-            echo user="$CLI_USER" >> ~/.oci/oci_cli_rc
-            echo fingerprint="$CLI_FINGERPRINT" >> ~/.oci/oci_cli_rc
-            echo key_file=~/.oci/oci_api_key.pem >> ~/.oci/oci_cli_rc
-            echo tenancy="$CLI_TENANCY" >> ~/.oci/oci_cli_rc
-            echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
+            cat $KEY_FILE | base64 --decode > .oci/oci_api_key.pem
+            chmod 600 .oci/oci_api_key.pem
+            echo [DEFAULT] > .oci/oci_cli_rc
+            echo user="$CLI_USER" >> .oci/oci_cli_rc
+            echo fingerprint="$CLI_FINGERPRINT" >> .oci/oci_cli_rc
+            echo key_file=~/.oci/oci_api_key.pem >> .oci/oci_cli_rc
+            echo tenancy="$CLI_TENANCY" >> .oci/oci_cli_rc
+            echo region="$CLI_REGION" >> .oci/oci_cli_rc
             echo $(ls -la)
-            cat ~/.oci/oci_cli_rc > ~/.oci/config
-            cat ~/.oci/oci_cli_rc
-            cat ~/.oci/config
-            chmod 600 ~/.oci/config
+            cat .oci/oci_cli_rc > .oci/config
+            cat .oci/oci_cli_rc
+            cat .oci/config
+            chmod 600 .oci/config
 
 
         - uses: actions/checkout@v4
