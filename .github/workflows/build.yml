@@ -19,6 +19,7 @@ jobs:
             echo $(ls -la)
             sudo chmod a+x install.sh
             ./install.sh --accept-all-defaults
+            exec -l $SHELL
             echo $(oci -v)
     
         - name: Configure OCI CLI
