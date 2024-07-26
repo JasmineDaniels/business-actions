@@ -23,7 +23,7 @@ jobs:
             CLI_AUTH: api_key
             CLI_USER: ${{ secrets.OCI_USER }}
             CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
-            KEY_FILE: ${{ secrets.OCI_CLI_KEY_FILE }}
+            KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
             CLI_TENANCY: ${{ secrets.OCI_TENANCY }}
             CLI_REGION: ${{ secrets.OCI_REGION }}
           run: |
