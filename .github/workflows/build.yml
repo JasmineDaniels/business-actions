@@ -96,7 +96,7 @@ jobs:
             - description: "Start the executable" 
               run: |
                 echo "Starting the executable..." 
-                ./server & 
+                ./server 
             EOF 
             DEPLOYMENT_SPEC_ID=$(oci artifacts generic artifact upload-by-path --repository-id $AR_REPO_ID --display-name "InstanceDeploymentSpec" --artifact-path instance_deployment_spec.yml  --content-body instance_deployment_spec.yml --query 'data.id' --raw-output) 
             echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
