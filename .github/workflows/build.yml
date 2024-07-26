@@ -31,13 +31,12 @@ jobs:
             TEMP_KEY_FILE=$KEY_FILE
             echo $TEMP_KEY_FILE > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
-            echo [DEFAULT] > ~/.oci/config
-            echo user=$CLI_USER >> ~/.oci/config
-            echo fingerprint=$CLI_FINGERPRINT >> ~/.oci/config
-            echo key_file="~/.oci/oci_api_key.pem" >> ~/.oci/config
-            echo tenancy=$CLI_TENANCY >> ~/.oci/config
-            echo region=$CLI_REGION >> ~/.oci/config
-            oci setup config --auth $CLI_AUTH --config-file ~/.oci/config
+            echo [DEFAULT] > ~/.oci/oci_cli_rc
+            echo user=$CLI_USER >> ~/.oci/oci_cli_rc
+            echo fingerprint=$CLI_FINGERPRINT >> ~/.oci/oci_cli_rc
+            echo key_file="~/.oci/oci_api_key.pem" >> ~/.oci/oci_cli_rc
+            echo tenancy=$CLI_TENANCY >> ~/.oci/oci_cli_rc
+            echo region=$CLI_REGION >> ~/.oci/oci_cli_rc
 
         - uses: actions/checkout@v4
         - uses: actions/setup-node@v4
