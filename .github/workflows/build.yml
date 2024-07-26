@@ -60,13 +60,7 @@ jobs:
           env: 
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: | 
-            ARTIFACT_ID=$(oci devops deploy-artifact create-inline-artifact \ 
-            --project-id $DEVOPS_PROJECT_ID \ 
-            --argument-substitution-mode true \
-            --display-name "exec-app" \ 
-            --artifact-type GENERIC_FILE \ 
-            --base64-encoded-content "$(base64 ./server)" \ 
-            --query 'data.id' --raw-output) 
+            ARTIFACT_ID=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID --argument-substitution-mode true --display-name "exec-app" --artifact-type GENERIC_FILE --base64-encoded-content "$(base64 ./server)" --query 'data.id' --raw-output) 
             echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
 
         - name: Create deployment spec in OCI DevOps 
