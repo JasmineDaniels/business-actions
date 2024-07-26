@@ -23,11 +23,12 @@ jobs:
             OCI_CLI_AUTH: api_key
             OCI_CLI_USER: ${{ secrets.OCI_USER }}
             OCI_CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+            KEY_FILE: ${{ secrets.OCI_CLI_KEY_FILE }}
             OCI_CLI_TENANCY: ${{ secrets.OCI_TENANCY }}
             OCI_CLI_REGION: ${{ secrets.OCI_REGION }}
           run: |
             mkdir -p ~/.oci
-            TEMP_KEY_FILE=$OCI_KEY_FILE
+            TEMP_KEY_FILE=$KEY_FILE
             echo $TEMP_KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
             OCI_CLI_KEY_FILE="~/.oci/oci_api_key.pem"
