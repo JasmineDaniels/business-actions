@@ -29,7 +29,7 @@ jobs:
           run: |
             mkdir ~/.oci
             echo $(ls)
-            cat $KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
+            echo $KEY_FILE | base64 --decode > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
             echo [DEFAULT] > ~/.oci/oci_cli_rc
             echo user="$CLI_USER" >> ~/.oci/oci_cli_rc
