@@ -86,7 +86,7 @@ jobs:
             - description: "Download and install the executable" \
             run: \
             - echo "Downloading the executable..." \
-            - if [[ -f server == 1 ]]; rm -fr server ; fi \
+            - if [[ -f server == 1 ]];then rm -fr server ; fi \
             - oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
             export OCI_CLI_AUTH=instance_principal
             - chmod +x server \
