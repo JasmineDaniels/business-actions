@@ -38,6 +38,7 @@ jobs:
             echo tenancy="$CLI_TENANCY" >> ~/.oci/oci_cli_rc
             echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
             cat ~/.oci/oci_cli_rc > ~/.oci/config
+            echo ~/.oci/oci_cli_rc
             cat ~/.oci/config
             chmod 600 ~/.oci/config
 
