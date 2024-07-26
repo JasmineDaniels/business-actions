@@ -28,7 +28,7 @@ jobs:
             CLI_REGION: ${{ secrets.OCI_REGION }}
           run: |
             mkdir ~/.oci
-            echo $KEY_FILE > ~/.oci/oci_api_key.pem
+            cat $KEY_FILE > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/oci_api_key.pem
             echo [DEFAULT] > ~/.oci/oci_cli_rc
             echo user="$CLI_USER" >> ~/.oci/oci_cli_rc
@@ -37,7 +37,6 @@ jobs:
             echo tenancy="$CLI_TENANCY" >> ~/.oci/oci_cli_rc
             echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
             cat ~/.oci/oci_cli_rc > ~/.oci/config
-            cat ~/.oci/oci_api_key.pem
             echo $(ls -la)
             chmod 600 ~/.oci/config
 
