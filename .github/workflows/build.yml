@@ -62,7 +62,8 @@ jobs:
           run: | 
             oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID \
             --display-name "serve-exec" --artifact-type GENERIC_FILE \
-            --base64-encoded-content "$(base64 ./server)" 
+            --base64-encoded-content "$(base64 ./server)" \
+            /
             echo oci devops deploy-artifact list --all
             echo "ARTIFACT_ID="ARTIFACT_ID" >> $GITHUB_ENV
 
