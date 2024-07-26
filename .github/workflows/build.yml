@@ -58,12 +58,11 @@ jobs:
         - name: Push Executable to Artifact Registry 
           id: create-artifact 
           env: 
+            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
-            oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID \
-              --display-name "serve-exec" --artifact-type GENERIC_FILE \
-              --base64-encoded-content "$(base64 ./server)" \
-              /
+            oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA
+
 
         - name: Create deployment spec in OCI DevOps 
           id: create-deployment-spec 
@@ -72,7 +71,7 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: | 
-            echo oci devops deploy-artifact list --all
+            echo oci artifacts generic artifact list --all
             cat <<EOF > instance_deployment_spec.yml \
             instanceConfiguration:  \
             description: "Deployment specification for OCI instance group" \
