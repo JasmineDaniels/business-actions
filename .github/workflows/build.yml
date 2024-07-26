@@ -37,6 +37,7 @@ jobs:
             echo key_file=~/.oci/oci_api_key.pem >> ~/.oci/oci_cli_rc
             echo tenancy="$CLI_TENANCY" >> ~/.oci/oci_cli_rc
             echo region="$CLI_REGION" >> ~/.oci/oci_cli_rc
+            echo $(ls -la)
             cat ~/.oci/oci_cli_rc > ~/.oci/config
             echo ~/.oci/oci_cli_rc
             cat ~/.oci/config
