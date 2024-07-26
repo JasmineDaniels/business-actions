@@ -83,16 +83,21 @@ jobs:
             lifecycle: 
             install: 
             - description: "Download and install the executable" 
-              run: 
-            - echo "Downloading the executable..." 
-            - oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
-            export OCI_CLI_AUTH=instance_principal
-            - chmod +x server 
+              run: |
+                echo "Downloading the executable..." 
+                oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server \
+                export OCI_CLI_AUTH=instance_principal
+                sudo firewall-cmd --permanent --zone=public --add-service=http
+                sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
+                sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
+                sudo systemctl restart firewalld
+                chmod +x server 
             start: 
             - description: "Start the executable" 
-              run: 
-            - echo "Starting the executable..." 
-            - nohup server & EOF 
+              run: |
+                echo "Starting the executable..." 
+                ./server & 
+            EOF 
             DEPLOYMENT_SPEC_ID=$(oci artifacts generic artifact upload-by-path --repository-id $AR_REPO_ID --display-name "InstanceDeploymentSpec" --artifact-path instance_deployment_spec.yml  --content-body instance_deployment_spec.yml --query 'data.id' --raw-output) 
             echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
             cat instance_deployment_spec.yml
