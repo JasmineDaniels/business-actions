@@ -44,6 +44,7 @@ jobs:
         - name: PKG Install
           run: | 
             npm i -g pkg
+            npm install -g json
 
         - name: Build Executable
           run: |
@@ -62,8 +63,18 @@ jobs:
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
-            oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config
-            echo 'ARTIFACT_ID=${{ steps.create-artifact.outputs.id }}' >> '$GITHUB_ENV'
+            echo 'JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config)' >> $GITHUB_OUTPUT
+            
+
+        - name: Get Artifact ID from JSON
+          id: get-artifact-id
+          env: 
+              JSON_RESPONSE: ${{ steps.create-artifact.outputs.JSON_RESPONSE }}
+          run: |
+            echo "the JSON_RESPONSE is: $JSON_RESPONSE"
+            echo "ARTIFACT_ID=$('$JSON_RESPONSE' | json id) " >> $GITHUB_ENV
+            printf '%s\n' ' This is the Artifact ID: $ARTIFACT_ID'
+
 
 
         - name: Create deployment spec inline 
