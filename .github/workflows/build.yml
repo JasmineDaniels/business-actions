@@ -83,7 +83,7 @@ jobs:
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: |
             
-              cat > instance_deployment_spec.yaml << 'close'
+              cat > instance_deployment_spec.yaml <<-EOF
                 version: 1.0
                 component: deployment
                 shell: bash
@@ -144,7 +144,7 @@ jobs:
                         command: |
                           echo "Failed Running Application"
                           echo "Handled failure"
-              close
+              EOF
             
 
         - name: Push deployment spec to OCI DevOps
