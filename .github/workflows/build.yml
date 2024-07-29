@@ -141,7 +141,9 @@ jobs:
                     name: "Failure Handling"
                     timeoutInSeconds: 1200
                     command: |
-                      echo "Handled failure" EOF 
+                      echo "Failed Running Application"
+                      echo "Handled failure"
+            EOF 
             
 
         - name: Push deployment spec to OCI DevOps
