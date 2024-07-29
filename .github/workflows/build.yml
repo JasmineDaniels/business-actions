@@ -73,11 +73,7 @@ jobs:
           run: |
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "ARTIFACT_ID=$JSON_ID" >> $GITHUB_ENV
-            printf '%s\n' ' This is the Artifact ID: ${{env.ARTIFACT_ID}}'
-            printf '%s\n' ' This is the Artifact ID: $ARTIFACT_ID'
-
-
-
+            
 
         - name: Create deployment spec inline 
           id: create-deployment-spec 
@@ -86,37 +82,80 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: | 
-            cat <<EOF > instance_deployment_spec.yml 
-            instanceConfiguration:  
-            description: "Deployment specification for OCI instance group" 
-            instanceGroupId: "$INSTANCE_GROUP_ID" 
-            deploymentName: "Deploy Executable" 
-            artifactSources: 
-            - artifactType: "GENERIC_FILE" artifactId: "$ARTIFACT_ID" 
-            lifecycle: 
-            install: 
-            - description: "Download and install the executable" 
-              run: |
-                echo "Downloading the executable..." 
-                oci artifacts generic-artifact download --artifact-id "$ARTIFACT_ID" --file server 
-                export OCI_CLI_AUTH=instance_principal
-                sudo firewall-cmd --permanent --zone=public --add-service=http
-                sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
-                sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
-                sudo systemctl restart firewalld
-                chmod +x server 
-            start: 
-            - description: "Start the executable" 
-              run: 
-               - echo "Starting the executable..." 
-               - ./server & 
+            cat <<EOF > instance_deployment_spec.yaml
+            version: 1.0
+            component: deployment
+            shell: bash
+            env:
+              variables:
+                # Local variables
+                ARTIFACT_FILE_NAME: "server"
+              vaultVariables:
+                # Vault variables
+                ARTIFACT_REPO_OCID_FromVault: ocid1.vaultsecret.oc1.iad.amaaaaaaz2fdaxqaqrxjimixp3adkjvjfz2udbv4segyhzhlbyhzo5dzovcq
+
+            files:
+              # This section is to define how the files in the artifact shall
+              # be put on the compute instance
+              - source: /
+              # Note files in /tmp/ will be deleted when system restarts
+                destination: /tmp/
+            steps:
+              # This section is to define the scripts that each step shall run on the instance after file copy.
+              - stepType: Command
+                name: Install OCI CLI
+                command: |
+                  cd ~
+                  python3 -m pip install --user oci-cli
+
+                timeoutInSeconds: 5000
+                shell: bash
+                onFailure:
+                  - stepType: Command
+                    name: "Failure Handling"
+                    timeoutInSeconds: 1200
+                    command: |
+                      echo "Handled failure"
+
+              - stepType: Command
+                name: Run the Application
+                command: |
+                  cd ~
+                  pid_count=`ps -fe |grep server | grep -v grep | wc -l`
+                  pid=`ps -fe |grep server | grep -v grep |awk '{print $2}'`
+                  if [[ $pid_count == 1 ]]  ;then kill -9 $pid ; fi
+                  export OCI_CLI_AUTH=instance_principal
+                  export PATH=$PATH:~/.local/bin/
+                  oci artifacts generic artifact download-by-path --repository-id ${ARTIFACT_REPO_OCID} --artifact-path ${ARTIFACT_NAME} --artifact-version $GITHUB_SHA --file server
+                  sudo firewall-cmd --permanent --zone=public --add-service=http
+                  sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
+                  sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
+                  sudo systemctl restart firewalld
+                  chmod +x appexec
+                  ./appexec &
+
+                timeoutInSeconds: 5000
+                shell: bash
+                onFailure:
+                  - stepType: Command
+                    name: "Failure Handling"
+                    timeoutInSeconds: 1200
+                    command: |
+                      echo "Handled failure" 
             EOF 
             
 
         - name: Push deployment spec to OCI DevOps
+          id: upload-deployment-spec
           run: |
-            cat instance_deployment_spec.yml
-            DEPLOYMENT_SPEC_ID=$(oci artifacts generic artifact upload-by-path --repository-id $AR_REPO_ID --display-name "InstanceDeploymentSpec" --artifact-path instance_deployment_spec.yml  --content-body instance_deployment_spec.yml --query 'data.id' --raw-output) 
+            echo UPLOAD_SPEC_RESPONSE=$(oci artifacts generic artifact upload-by-path --repository-id $AR_REPO_ID --display-name "InstanceDeploymentSpec" --artifact-path instance_deployment_spec.yaml  --content-body instance_deployment_spec.yaml) >> $GITHUB_OUTPUT
+
+        - name: Get Deployment Spec ID from JSON
+          id: get-deployment-spec-id
+          env: 
+              JSON_RESPONSE: ${{ steps.upload-deployment-spec.outputs.UPLOAD_SPEC_RESPONSE }}
+          run: |
+            JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
 
         - name: Trigger OCI DevOps Pipeline
