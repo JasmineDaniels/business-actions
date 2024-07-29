@@ -131,8 +131,8 @@ jobs:
                   sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
                   sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
                   sudo systemctl restart firewalld
-                  chmod +x appexec
-                  ./appexec &
+                  chmod +x /tmp/server
+                  ./tmp/server &
 
                 timeoutInSeconds: 5000
                 shell: bash
@@ -141,8 +141,7 @@ jobs:
                     name: "Failure Handling"
                     timeoutInSeconds: 1200
                     command: |
-                      echo "Handled failure" 
-            EOF 
+                      echo "Handled failure" EOF 
             
 
         - name: Push deployment spec to OCI DevOps
@@ -156,7 +155,7 @@ jobs:
               JSON_RESPONSE: ${{ steps.upload-deployment-spec.outputs.UPLOAD_SPEC_RESPONSE }}
           run: |
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
-            echo "DEPLOYMENT_SPEC_ID=$DEPLOYMENT_SPEC_ID" >> $GITHUB_ENV
+            echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
         - name: Trigger OCI DevOps Pipeline
           env:
