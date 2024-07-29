@@ -63,7 +63,7 @@ jobs:
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
-            echo 'JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config)' >> $GITHUB_OUTPUT
+            echo JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config) >> $GITHUB_OUTPUT
             
 
         - name: Get Artifact ID from JSON
@@ -73,7 +73,7 @@ jobs:
           run: |
             echo "the JSON_RESPONSE is: $JSON_RESPONSE"
             echo "ARTIFACT_ID=$('$JSON_RESPONSE' | json id) " >> $GITHUB_ENV
-            printf '%s\n' ' This is the Artifact ID: $ARTIFACT_ID'
+            printf '%s\n' ' This is the Artifact ID: ${{env.ARTIFACT_ID}}'
 
 
 
