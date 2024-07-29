@@ -71,7 +71,7 @@ jobs:
           env: 
               JSON_RESPONSE: ${{ steps.create-artifact.outputs.JSON_RESPONSE }}
           run: |
-            echo ARTIFACT_ID=$JSON_RESPONSE | json data.id >> $GITHUB_ENV
+            echo ARTIFACT_ID=( echo $JSON_RESPONSE | json data.id) >> $GITHUB_ENV
             printf '%s\n' ' This is the Artifact ID: ${{env.ARTIFACT_ID}}'
 
 
