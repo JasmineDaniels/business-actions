@@ -48,7 +48,14 @@ jobs:
         - name: Copy files to folder
           run: |
             mkdir downloads
-            cp -r . downloads/
+            cp -r dist/ downloads/
+            cp -r src/ downloads/
+            cp -r node_modules downloads/
+            cp app.js downloads/
+            cp server.js downloads/
+            cp package.json downloads/
+            cp package-lock.json downloads/
+            cp .proxyrc.json downloads/
             echo $(ls downloads)
 
         
