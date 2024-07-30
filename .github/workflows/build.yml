@@ -131,7 +131,7 @@ jobs:
                           echo "Handled failure"
                   
                   - stepType: Command
-                    name: "Install Node"
+                    name: Install Node
                     command: |
                       cd ~
                       # install nvm
