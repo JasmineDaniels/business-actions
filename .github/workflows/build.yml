@@ -59,7 +59,7 @@ jobs:
             echo $(ls downloads)
 
         
-        - name: Push Executable to Artifact Registry 
+        - name: Push App to Artifact Registry 
           id: create-artifact 
           env:
             CLI_AUTH: api_key
@@ -72,7 +72,7 @@ jobs:
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
-            echo JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path server --content-body server --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path downloads --content-body downloads --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config) >> $GITHUB_OUTPUT
             
 
         - name: Get Artifact ID from JSON
@@ -127,6 +127,28 @@ jobs:
                         timeoutInSeconds: 1200
                         command: |
                           echo "Handled failure"
+                  
+                  - stepType: Command
+                    name: "Install Node"
+                    command: |
+                      cd ~
+                      # install nvm
+                      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+                      export NVM_DIR="$HOME/.nvm"
+                      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                      nvm install lts/gallium
+                      echo "NODE VERSION: $(node -v)"
+                      echo "NPM VERSION: $(npm -v)"
+                    
+                    timeoutInSeconds: 5000
+                    shell: bash 
+                    onFailure:
+                      - type: Command
+                        command: |
+                          echo "Handling Failure"
+                          echo "Failure successfully handled"
+                        timeoutInSeconds: 40
+                        runAs: root
 
                   - stepType: Command
                     name: Run the Application
@@ -134,13 +156,13 @@ jobs:
                       cd ~
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file server
+                      oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file downloads
                       sudo firewall-cmd --permanent --zone=public --add-service=http
                       sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
                       sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
                       sudo systemctl restart firewalld
-                      chmod +x server
-                      ./server &
+                      cd downloads
+                      npm start
 
                     timeoutInSeconds: 5000
                     shell: bash
