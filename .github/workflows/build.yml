@@ -44,7 +44,6 @@ jobs:
         - name: Install 
           run: | 
             npm install -g json
-            sudo yum install zip
 
         - name: Copy files to folder
           run: |
