@@ -130,8 +130,8 @@ jobs:
                       sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
                       sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
                       sudo systemctl restart firewalld
-                      chmod +x /tmp/server
-                      ./tmp/server &
+                      chmod +x server
+                      ./server &
 
                     timeoutInSeconds: 5000
                     shell: bash
