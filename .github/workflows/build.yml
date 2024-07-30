@@ -41,9 +41,10 @@ jobs:
             npm ci
             npm run build
         
-        - name: PKG Install
+        - name: Install 
           run: | 
             npm install -g json
+            sudo yum install zip
 
         - name: Copy files to folder
           run: |
@@ -57,6 +58,8 @@ jobs:
             cp package-lock.json downloads/
             cp .proxyrc.json downloads/
             echo $(ls downloads)
+            zip -r archive.zip downloads
+
 
         
         - name: Push App to Artifact Registry 
@@ -72,7 +75,7 @@ jobs:
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
           run: |
-            echo JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path downloads --content-body downloads --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo JSON_RESPONSE=$(oci artifacts generic artifact upload-by-path --artifact-path archive.zip --content-body archive.zip --repository-id $AR_REPO_ID --artifact-version $GITHUB_SHA --config-file ~/.oci/config) >> $GITHUB_OUTPUT
             
 
         - name: Get Artifact ID from JSON
@@ -156,7 +159,8 @@ jobs:
                       cd ~
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file downloads
+                      oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file archive.zip
+                      unzip archive.zip
                       sudo firewall-cmd --permanent --zone=public --add-service=http
                       sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
                       sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
