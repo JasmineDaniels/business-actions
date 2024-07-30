@@ -78,6 +78,7 @@ jobs:
         - name: Create deployment spec inline 
           id: create-deployment-spec 
           env: 
+            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
@@ -122,12 +123,9 @@ jobs:
                     name: Run the Application
                     command: |
                       cd ~
-                      pid_count=`ps -fe |grep server | grep -v grep | wc -l`
-                      pid=`ps -fe |grep server | grep -v grep |awk '{print $2}'`
-                      if [[ $pid_count == 1 ]]  ;then kill -9 $pid ; fi
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      oci artifacts generic artifact download-by-path --repository-id ${ARTIFACT_REPO_OCID} --artifact-path ${ARTIFACT_NAME} --artifact-version $GITHUB_SHA --file server
+                      oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file server
                       sudo firewall-cmd --permanent --zone=public --add-service=http
                       sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
                       sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
@@ -162,28 +160,7 @@ jobs:
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
-        - name: Create Deploy Instance Group Stage
-          id: create-deploy-stage
-          env:
-            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }}
-            INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
-            DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
-          run: |
-            oci devops deploy-stage create-deploy-compute-instance-group-stage --compute-instance-group-environment-id $INSTANCE_GROUP_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --pipeline-id $DEVOPS_PIPELINE_ID
-
-        - name: Trigger OCI DevOps Pipeline
-          env:
-            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}
-            DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
-            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
-            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }} 
-          run: |
-            echo "Triggering OCI DevOps Pipeline..."
-            oci devops deployment create-pipeline-deployment \
-            --pipeline-id $DEVOPS_PIPELINE_ID \
-            --display-name "GitHub Actions Triggered Deployment" \
-            --artifact-override-arguments '[{"artifact-id":"'$ARTIFACT_ID'", "artifact-source":{"source-type":"INLINE"} }]' \
-            --deployment-arguments '[{"artifact-id":"'$DEPLOYMENT_SPEC_ID'", "artifact-source":{"source-type":"INLINE"}}]'
+        
         
 
         - name: Cleanup
