@@ -136,7 +136,7 @@ jobs:
                       cd ~
                       # install nvm
                       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-                      export NVM_DIR="$HOME/.nvm"
+                      export NVM_DIR="~/.nvm"
                       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
                       nvm install lts/gallium
                       echo "NODE VERSION: $(node -v)"
@@ -157,7 +157,8 @@ jobs:
                     command: |
                       cd ~
                       export OCI_CLI_AUTH=instance_principal
-                      export PATH=$PATH:~/.local/bin/
+                      export NVM_DIR="~/.nvm"
+                      source ~/.nvm/nvm.sh
                       oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file archive.zip
                       unzip archive.zip
                       sudo firewall-cmd --permanent --zone=public --add-service=http
