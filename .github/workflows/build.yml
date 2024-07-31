@@ -145,12 +145,12 @@ jobs:
                     timeoutInSeconds: 5000
                     shell: bash 
                     onFailure:
-                      - type: Command
+                      - stepType: Command
+                        name: "Failure Handling"
+                        timeoutInSeconds: 600
                         command: |
                           echo "Handling Failure"
                           echo "Failure successfully handled"
-                        timeoutInSeconds: 40
-                        runAs: root
 
                   - stepType: Command
                     name: Run the Application
