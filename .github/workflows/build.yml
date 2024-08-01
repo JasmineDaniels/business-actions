@@ -181,15 +181,15 @@ jobs:
                     name: Run the Application
                     command: |
                       cd ~
-                      echo $(ls)
+                      echo "I am in $(pwd) directory"
                       echo "NODE VERSION: $(node -v)"
                       echo "NPM VERSION: $(npm -v)"
                       cd ../../
-                      echo $(pwd)
-                      echo $(ls)
+                      echo "I am in $(pwd) directory"
                       echo "NODE VERSION: $(node -v)"
                       echo "NPM VERSION: $(npm -v)"
                       cd /tmp/downloads
+                      echo "I am in $(pwd) directory"
                       node server.js
 
                     timeoutInSeconds: 5000
