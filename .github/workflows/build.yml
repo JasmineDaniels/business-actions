@@ -112,7 +112,7 @@ jobs:
                   # be put on the compute instance
                   - source: /
                   # Note files in /tmp/ will be deleted when system restarts
-                    destination: /tmp/
+                    destination: ~/
                 steps:
                   # This section is to define the scripts that each step shall run on the instance after file copy.
                   - stepType: Command
@@ -181,15 +181,7 @@ jobs:
                     name: Run the Application
                     command: |
                       cd ~
-                      echo "I am in $(pwd) directory"
-                      echo "NODE VERSION: $(node -v)"
-                      echo "NPM VERSION: $(npm -v)"
-                      cd ../../
-                      echo "I am in $(pwd) directory"
-                      echo "NODE VERSION: $(node -v)"
-                      echo "NPM VERSION: $(npm -v)"
-                      cd /tmp/downloads
-                      echo "I am in $(pwd) directory"
+                      cd downloads
                       node server.js
 
                     timeoutInSeconds: 5000
