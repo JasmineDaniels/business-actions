@@ -128,14 +128,11 @@ jobs:
                     name: Install Node
                     command: |
                       cd ~
-                      # install nvm
-                      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-                      export NVM_DIR="~/.nvm"
-                      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                      nvm install lts/gallium
+                      sudo yum update
+                      sudo yum install -y nodejs
                       echo "NODE VERSION: $(node -v)"
                       echo "NPM VERSION: $(npm -v)"
-                      echo $PATH
+                      node --version
                     
                     timeoutInSeconds: 5000
                     shell: bash 
