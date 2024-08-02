@@ -149,10 +149,7 @@ jobs:
                       lsof -i tcp:3000 | awk 'NR!=1 {print $2}' | xargs kill
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      sudo firewall-cmd --permanent --zone=public --add-service=http
-                      sudo firewall-cmd --permanent --zone=public --add-port=5000/tcp
-                      sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
-                      sudo firewall-cmd --reload
+                      sudo system disable firewalld
                       oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file archive.zip
                       unzip -o archive.zip
 
@@ -171,7 +168,7 @@ jobs:
                     command: |
                       cd ~
                       cd downloads
-                      npm start
+                      npm start &
 
                     timeoutInSeconds: 300
                     shell: bash
