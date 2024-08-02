@@ -130,16 +130,14 @@ jobs:
                       cd ~
                       sudo yum update
                       sudo yum install -y nodejs
-                      echo "NODE VERSION: $(node -v)"
-                      echo "NPM VERSION: $(npm -v)"
                       node --version
                     
-                    timeoutInSeconds: 5000
+                    timeoutInSeconds: 600
                     shell: bash 
                     onFailure:
                       - stepType: Command
                         name: "Failure Handling"
-                        timeoutInSeconds: 600
+                        timeoutInSeconds: 300
                         command: |
                           echo "Handling Failure"
                           echo "Failure successfully handled"
@@ -173,14 +171,14 @@ jobs:
                     command: |
                       cd ~
                       cd downloads
-                      node server.js
+                      npm start
 
-                    timeoutInSeconds: 5000
+                    timeoutInSeconds: 300
                     shell: bash
                     onFailure:
                       - stepType: Command
                         name: "Failure Handling"
-                        timeoutInSeconds: 1200
+                        timeoutInSeconds: 300
                         command: |
                           echo "Failed Running Application"
                           echo "Handled failure"
