@@ -149,7 +149,7 @@ jobs:
                       sudo fuser -k 3000/tcp
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      systemctl disable firewalld
+                      sudo systemctl disable firewalld
                       oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file archive.zip
                       unzip -o archive.zip
 
