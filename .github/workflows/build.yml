@@ -197,7 +197,21 @@ jobs:
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
-        
+        - name: Trigger OCI DevOps Pipeline
+          env:
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}
+            DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
+            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }} 
+            DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
+          run: |
+            echo "Triggering OCI DevOps Pipeline..."
+            oci devops deployment create-single-stage-deployment \
+            --pipeline-id $DEVOPS_PIPELINE_ID \
+            --stage-id $DEPLOY_STAGE_ID \
+            --display-name "GitHub Actions Triggered Deployment" \
+            --artifact-override-arguments '{"items": [ { "deployArtifactId": "'$ARTIFACT_ID'", "name": "'artifact.zip:$GITHUB_SHA'", "value": "artifact.zip" } ] }' \
+            --deployment-arguments '[{"artifact-id":"$DEPLOYMENT_SPEC_ID", "artifact-source":{"source-type":"INLINE"}}]'
         
 
         - name: Cleanup
