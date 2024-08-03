@@ -211,7 +211,7 @@ jobs:
             --stage-id $DEPLOY_STAGE_ID \
             --display-name "GitHub Actions Triggered Deployment" \
             --artifact-override-arguments '{"items": [ { "deployArtifactId": $ARTIFACT_ID, "name": "artifact.zip:$GITHUB_SHA", "value": "artifact.zip" } ] }' \
-            --deployment-arguments '[{"name": "instance_deployment_spec.yaml:$GITHUB_SHA", "value": $DEPLOYMENT_SPEC_ID}}]'
+            --deployment-arguments '[{"name": "instance_deployment_spec.yaml:$GITHUB_SHA", "value": $DEPLOYMENT_SPEC_ID}]'
         
 
         - name: Cleanup
