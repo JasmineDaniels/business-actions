@@ -146,10 +146,10 @@ jobs:
                     name: Replace Application Files
                     command: |
                       cd ~
-                      lsof -i tcp:3000 | awk 'NR!=1 {print $2}' | xargs kill
+                      sudo fuser -k 3000/tcp
                       export OCI_CLI_AUTH=instance_principal
                       export PATH=$PATH:~/.local/bin/
-                      sudo system disable firewalld
+                      system disable firewalld
                       oci artifacts generic artifact download --artifact-id $ARTIFACT_ID --file archive.zip
                       unzip -o archive.zip
 
