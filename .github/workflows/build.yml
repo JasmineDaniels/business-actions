@@ -210,13 +210,13 @@ jobs:
                 {
                 "items": [
                   {
-                    "deployArtifactId": "$ARTIFACT_ID",
-                    "name": "artifact.zip",
+                    "deployArtifactId": $ARTIFACT_ID,
+                    "name": "artifact.zip:$GITHUB_SHA",
                     "value": "artifact.zip"
                   },
                   {
-                    "deployArtifactId": "$DEPLOYMENT_SPEC_ID",
-                    "name": "instance_deployment_spec.yaml",
+                    "deployArtifactId": $DEPLOYMENT_SPEC_ID,
+                    "name": "instance_deployment_spec.yaml:$GITHUB_SHA",
                     "value": "instance_deployment_spec.yaml"
                   }
                 ]
@@ -237,7 +237,8 @@ jobs:
             --pipeline-id $DEVOPS_PIPELINE_ID \
             --stage-id $DEPLOY_STAGE_ID \
             --display-name "GitHub Actions Triggered Deployment" \
-            --artifact-override-arguments file://trigger.json 
+            --artifact-override-arguments file://trigger.json \
+            --debug
         
 
         - name: Cleanup
