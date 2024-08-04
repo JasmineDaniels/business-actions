@@ -196,6 +196,33 @@ jobs:
           run: |
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
+        
+        - name: Create trigger stage srtifacts inline 
+          id: create-trigger-json 
+          env: 
+            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
+            INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
+          run: |
+            
+              cat > trigger.json <<-EOF
+                {
+                "items": [
+                  {
+                    "deployArtifactId": "$ARTIFACT_ID",
+                    "name": "artifact.zip:$GITHUB_SHA",
+                    "value": "artifact.zip"
+                  },
+                  {
+                    "deployArtifactId": "$DEPLOYMENT_SPEC_ID",
+                    "name": "instance_deployment_spec.yaml:$GITHUB_SHA",
+                    "value": "instance_deployment_spec.yaml"
+                  }
+                ]
+              }
+              EOF
+
 
         - name: Trigger OCI DevOps Pipeline
           env:
@@ -210,7 +237,7 @@ jobs:
             --pipeline-id $DEVOPS_PIPELINE_ID \
             --stage-id $DEPLOY_STAGE_ID \
             --display-name "GitHub Actions Triggered Deployment" \
-            --artifact-override-arguments '{"items": [ { "deployArtifactId": $ARTIFACT_ID, "name": "artifact.zip:$GITHUB_SHA", "value": "artifact.zip" }, { "deployArtifactId": $DEPLOYMENT_SPEC_ID, "name": "instance_deployment_spec.yaml:$GITHUB_SHA", "value": "instance_deployment_spec.yaml" } ] }' \
+            --artifact-override-arguments file://trigger.json \
         
 
         - name: Cleanup
