@@ -211,12 +211,12 @@ jobs:
                 "items": [
                   {
                     "deployArtifactId": "$ARTIFACT_ID",
-                    "name": "artifact.zip:$GITHUB_SHA",
+                    "name": "artifact.zip",
                     "value": "artifact.zip"
                   },
                   {
                     "deployArtifactId": "$DEPLOYMENT_SPEC_ID",
-                    "name": "instance_deployment_spec.yaml:$GITHUB_SHA",
+                    "name": "instance_deployment_spec.yaml",
                     "value": "instance_deployment_spec.yaml"
                   }
                 ]
