@@ -206,7 +206,7 @@ jobs:
             ENCODED_CONTENT: ${{ env.ENCODED_CONTENT }}
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
-            CONTENT=$(base64 instance_deployment_spec.yaml) 
+            CONTENT=$(echo -n "$(<instance_deployment_spec.yaml)" | base64) 
             echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID  --base64-encoded-content $CONTENT --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
 
 
