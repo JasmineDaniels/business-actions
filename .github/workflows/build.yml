@@ -200,10 +200,12 @@ jobs:
         - name: Add Artifacts to Deploy pipeline
           id: add-artifacts-to-pipeline
           env:
+            CLI_AUTH: api_key
+            OCI_CLI_KEY_FILE: ~/.oci/key.pem 
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion} --artifact-type "DEPLOYMENT_SPEC" --config-file ~/.oci/config) >> $GITHUB_OUTPUT  
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-type "DEPLOYMENT_SPEC" --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion}) >> $GITHUB_OUTPUT  
         
 
         - name: Get Deployment Artifact
