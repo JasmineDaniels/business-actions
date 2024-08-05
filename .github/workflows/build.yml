@@ -197,14 +197,35 @@ jobs:
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
+
+        - name: Add Artifacts to pipeline
+          id: add-artifacts-to-pipeline
+          env:
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
+            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
+          run: |
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo ADD_FILES_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-path archive.zip --argument-substitution-mode ${appVersion} --artifact-type GENERIC_FILE --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+
+        - name: Get Pipeline Artifacts
+          id: get-pipeline-ids
+          env: 
+              SPEC_JSON_RESPONSE: ${{ steps.upload-deployment-spec.outputs.ADD_SPEC_RESPONSE }}
+              FILES_JSON_RESPONSE: ${{ steps.upload-deployment-spec.outputs.ADD_FILES_RESPONSE }}
+          run: |
+            SPEC_JSON_ID=$( echo $SPEC_JSON_RESPONSE | json data.id)
+            echo "SPEC_PIPELINE_ID=$SPEC_JSON_ID" >> $GITHUB_ENV
+            FILES_JSON_ID=$( echo $FILES_JSON_RESPONSE | json data.id)
+            echo "FILES_PIPELINE_ID=$FILES_JSON_ID" >> $GITHUB_ENV
+
         
         - name: Create trigger stage artifacts inline 
           id: create-trigger-json 
           env: 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
-            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
-            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }}
+            ARTIFACT_ID: ${{ env.FILES_PIPELINE_ID }} 
+            DEPLOYMENT_SPEC_ID: ${{ env.SPEC_PIPELINE_ID }}
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: |
             
