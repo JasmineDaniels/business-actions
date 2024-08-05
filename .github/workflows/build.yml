@@ -198,6 +198,18 @@ jobs:
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
 
+        - name: Stage deplyment artifacts JSON 
+          id: create-trigger-json 
+          env: 
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
+          run: |
+            cat > artifacts.json <<-EOF
+              [
+                "$ARTIFACT_ID"
+              ]
+            EOF
+  
+
         - name: Update DevOps Stage
           id: add-artifacts-to-pipeline
           env:
@@ -207,7 +219,7 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
             DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
           run: |
-            yes | oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --artifact-ids ["$ARTIFACT_ID"]
+            printf "y" | oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --artifact-ids file://artifacts.json
 
 
         - name: Trigger OCI DevOps Pipeline
