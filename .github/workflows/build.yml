@@ -207,7 +207,7 @@ jobs:
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
             CONTENT=$(echo -n "$(<instance_deployment_spec.yaml)" | base64) 
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID --artifact-type "DEPLOYMENT_SPEC" --argument-substitution-mode ${appVersion} --base64-encoded-content "$CONTENT" --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID --artifact-type "DEPLOYMENT_SPEC" --argument-substitution-mode ${appVersion} --base64-encoded-content instance_deployment_spec.yaml --config-file ~/.oci/config) >> $GITHUB_OUTPUT
 
 
         - name: Get Deployment-Artifact ID from JSON
