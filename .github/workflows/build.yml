@@ -198,14 +198,15 @@ jobs:
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
 
-        - name: Add Artifacts to pipeline
+        - name: Add Artifacts to Deploy pipeline
           id: add-artifacts-to-pipeline
           env:
-            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
+            FILES_ARTIFACT_ID: ${{ secrets.APP_FILES_ARTIFACT_ID }} 
+            DPS_ARTIFACT_ID: ${{ secrets.DPS_ARTIFACT_ID }} 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
-            echo ADD_FILES_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-path archive.zip --argument-substitution-mode ${appVersion} --artifact-type GENERIC_FILE --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact update-generic-artifact --repository-id $AR_REPO_ID --artifact-id $DPS_ARTIFACT_ID --artifact-version $GITHUB_SHA --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo ADD_FILES_RESPONSE=$(oci devops deploy-artifact update-generic-artifact --repository-id $AR_REPO_ID --artifact-id $FILES_ARTIFACT_ID --artifact-version $GITHUB_SHA --artifact-path archive.zip --argument-substitution-mode ${appVersion} --artifact-type GENERIC_FILE --config-file ~/.oci/config) >> $GITHUB_OUTPUT
 
         - name: Get Pipeline Artifacts
           id: get-pipeline-ids
@@ -251,8 +252,6 @@ jobs:
           env:
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}
             DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
-            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
-            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }} 
             DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
           run: |
             echo "Triggering OCI DevOps Pipeline..."
