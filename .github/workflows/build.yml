@@ -198,49 +198,16 @@ jobs:
             echo "DEPLOYMENT_SPEC_ID=$JSON_ID" >> $GITHUB_ENV
 
 
-        - name: Add Artifacts to Deploy pipeline
+        - name: Update DevOps Stage
           id: add-artifacts-to-pipeline
           env:
             CLI_AUTH: api_key
-            OCI_CLI_KEY_FILE: ~/.oci/key.pem
-            FILES_ARTIFACT_ID: ${{ secrets.APP_FILES_ARTIFACT_ID }} 
-            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
-            ENCODED_CONTENT: ${{ env.ENCODED_CONTENT }}
-            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
+            OCI_CLI_KEY_FILE: ~/.oci/key.pem 
+            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_SPEC_ID }}
+            ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
+            DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
           run: |
-            CONTENT=$(echo -n "$(<instance_deployment_spec.yaml)" | base64) 
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID --artifact-type "DEPLOYMENT_SPEC" --argument-substitution-mode ${appVersion} --base64-encoded-content "$CONTENT") >> $GITHUB_OUTPUT
-
-
-        - name: Get Deployment-Artifact ID from JSON
-          id: get-dp-spec-pipeline-id
-          env: 
-              JSON_RESPONSE: ${{ steps.add-artifacts-to-pipeline.outputs.ADD_SPEC_RESPONSE }}
-          run: |
-            DP_SPEC_JSON_ID=$( echo $JSON_RESPONSE | json data.id)
-            echo "DP_SPEC_PIPELINE_ID=$DP_SPEC_JSON_ID" >> $GITHUB_ENV
-
-        
-        - name: Create trigger stage deplyment artifacts inline 
-          id: create-trigger-json 
-          env: 
-            AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
-            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}  
-            DEPLOYMENT_SPEC_ID: ${{ env.DP_SPEC_PIPELINE_ID }}
-            INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
-          run: |
-            
-              cat > trigger.json <<-EOF
-                {
-                "items": [
-                  {
-                    "deployArtifactId": "$DEPLOYMENT_SPEC_ID",
-                    "name": "appVersion",
-                    "value": "$GITHUB_SHA"
-                  }
-                ]
-              }
-              EOF
+            oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --artifact-ids ["$ARTIFACT_ID"]
 
 
         - name: Trigger OCI DevOps Pipeline
@@ -252,9 +219,7 @@ jobs:
             echo "Triggering OCI DevOps Pipeline..."
             oci devops deployment create-single-stage-deployment \
             --pipeline-id $DEVOPS_PIPELINE_ID \
-            --stage-id $DEPLOY_STAGE_ID \
-            --display-name "GitHub Actions Triggered Deployment" \
-            --artifact-override-arguments file://trigger.json 
+            --stage-id $DEPLOY_STAGE_ID 
         
 
         - name: Cleanup
