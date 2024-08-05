@@ -205,7 +205,7 @@ jobs:
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-type "DEPLOYMENT_SPEC" --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion}) >> $GITHUB_OUTPUT  
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-generic-artifact --repository-id $AR_REPO_ID --project-id $DEVOPS_PROJECT_ID --artifact-version $GITHUB_SHA --artifact-type "DEPLOYMENT_SPEC" --artifact-path instance_deployment_spec.yaml --argument-substitution-mode "${appVersion}") >> $GITHUB_OUTPUT  
         
 
         - name: Get Deployment Artifact
