@@ -207,7 +207,7 @@ jobs:
             ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
             DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
           run: |
-            echo y | oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --artifact-ids ["$ARTIFACT_ID"]
+            yes | oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID --artifact-ids ["$ARTIFACT_ID"]
 
 
         - name: Trigger OCI DevOps Pipeline
