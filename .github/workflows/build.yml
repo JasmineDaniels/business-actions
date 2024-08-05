@@ -209,7 +209,7 @@ jobs:
             echo ADD_FILES_RESPONSE=$(oci devops deploy-artifact update-generic-artifact --repository-id $AR_REPO_ID --artifact-id $FILES_ARTIFACT_ID --artifact-version $GITHUB_SHA --artifact-path archive.zip --argument-substitution-mode ${appVersion} --artifact-type GENERIC_FILE --config-file ~/.oci/config) >> $GITHUB_OUTPUT
 
         
-        - name: Create trigger stage artifacts inline 
+        - name: Create trigger stage deplyment artifacts inline 
           id: create-trigger-json 
           env: 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
