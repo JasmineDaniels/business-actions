@@ -202,31 +202,34 @@ jobs:
           id: add-artifacts-to-pipeline
           env:
             FILES_ARTIFACT_ID: ${{ secrets.APP_FILES_ARTIFACT_ID }} 
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
             DPS_ARTIFACT_ID: ${{ secrets.DPS_ARTIFACT_ID }} 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
           run: |
-            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact update-generic-artifact --repository-id $AR_REPO_ID --artifact-id $DPS_ARTIFACT_ID --artifact-version $GITHUB_SHA --artifact-path instance_deployment_spec.yaml --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
-            echo ADD_FILES_RESPONSE=$(oci devops deploy-artifact update-generic-artifact --repository-id $AR_REPO_ID --artifact-id $FILES_ARTIFACT_ID --artifact-version $GITHUB_SHA --artifact-path archive.zip --argument-substitution-mode ${appVersion} --artifact-type GENERIC_FILE --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+            echo ADD_SPEC_RESPONSE=$(oci devops deploy-artifact create-inline-artifact --project-id $DEVOPS_PROJECT_ID  --base64-encoded-content $(base64 instance_deployment_spec.yaml) --argument-substitution-mode ${appVersion} --artifact-type DEPLOYMENT_SPEC --config-file ~/.oci/config) >> $GITHUB_OUTPUT
+
+
+        - name: Get Deployment Spec ID from JSON
+          id: get-dp-spec-pipeline-id
+          env: 
+              JSON_RESPONSE: ${{ steps.add-artifacts-to-pipeline.outputs.ADD_SPEC_RESPONSE }}
+          run: |
+            DP_SPEC_JSON_ID=$( echo $JSON_RESPONSE | json data.id)
+            echo "DP_SPEC_PIPELINE_ID=$DP_SPEC_JSON_ID" >> $GITHUB_ENV
 
         
         - name: Create trigger stage deplyment artifacts inline 
           id: create-trigger-json 
           env: 
             AR_REPO_ID: ${{ secrets.AR_REPO_ID }}
-            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }} 
-            ARTIFACT_ID: ${{ secrets.APP_FILES_ARTIFACT_ID }} 
-            DEPLOYMENT_SPEC_ID: ${{ secrets.DPS_ARTIFACT_ID }}
+            DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}  
+            DEPLOYMENT_SPEC_ID: ${{ env.DP_SPEC_PIPELINE_ID }}
             INSTANCE_GROUP_ID: ${{ secrets.INSTANCE_GROUP_ID}}
           run: |
             
               cat > trigger.json <<-EOF
                 {
                 "items": [
-                  {
-                    "deployArtifactId": "$ARTIFACT_ID",
-                    "name": "appVersion",
-                    "value": "$GITHUB_SHA"
-                  },
                   {
                     "deployArtifactId": "$DEPLOYMENT_SPEC_ID",
                     "name": "appVersion",
