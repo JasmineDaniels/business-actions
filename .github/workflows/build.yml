@@ -245,7 +245,8 @@ jobs:
             echo "Triggering OCI DevOps Pipeline..."
             oci devops deployment create-single-stage-deployment \
             --pipeline-id $DEVOPS_PIPELINE_ID \
-            --stage-id $DEPLOY_STAGE_ID 
+            --stage-id $DEPLOY_STAGE_ID \
+            --display-name "GitHub Actions Triggered Deployment" 
 
         - name: Cleanup
           run: |
