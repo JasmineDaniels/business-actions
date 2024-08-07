@@ -165,6 +165,7 @@ jobs:
                     name: Run the Application
                     command: |
                       cd ~
+                      export HOSTNAME
                       cd downloads
                       npm start &
 
