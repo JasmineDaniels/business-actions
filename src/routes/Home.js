@@ -9,7 +9,7 @@ function Home() {
       <div className="col-md-5 p-lg-5 mx-auto my-5">
         <h1 className="display-4 font-weight-normal">Business Contacts Latest Version</h1>
         <p className="lead font-weight-normal">"It's better to hang out with people better than you. Pick out associates whose behavior is better than yours and you'll drift in that direction."</p>
-        <p className="lead font-weight-normal"><em>- Warren Buffett {HOSTNAME}</em></p>
+        <p className="lead font-weight-normal"><em>- Warren Buffett {HOSTNAME} Pretty</em></p>
         <Link className="btn btn-outline-secondary" to="/contacts">View Contacts</Link>
       </div>
       <div className="product-device box-shadow d-none d-md-block"></div>
