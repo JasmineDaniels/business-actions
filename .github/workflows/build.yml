@@ -212,17 +212,6 @@ jobs:
           run: |
             JSON_ID=$( echo $JSON_RESPONSE | json data.id)
             echo "DEPLOYMENT_ARTIFACT=$JSON_ID" >> $GITHUB_ENV
-
-        - name: Stage deplyment artifacts JSON 
-          id: create-trigger-json 
-          env: 
-            ARTIFACT_ID: ${{ env.ARTIFACT_ID }} 
-          run: |
-            cat > artifacts.json <<-EOF
-              [
-                "$ARTIFACT_ID"
-              ]
-            EOF
     
         - name: Update DevOps Stage
           id: update-devops-stage
@@ -234,18 +223,43 @@ jobs:
             DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
           run: |
             printf "y" | oci devops deploy-stage update-deploy-compute-instance-group-stage --stage-id $DEPLOY_STAGE_ID --deployment-spec-artifact-id $DEPLOYMENT_SPEC_ID 
+
+        - name: Sleep for 30 seconds
+          run: sleep 40s
+
+        - name: Get Deploy Stage
+          id: get-deploy-stage
+          env: 
+            DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
+          run: |
+            echo GET_STAGE_RESPONSE=$(oci devops deploy-stage get --stage-id $DEPLOY_STAGE_ID) >> $GITHUB_OUTPUT
+
+        - name: Validate Deploy Stage
+          env: 
+            DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
+            JSON_RESPONSE: ${{ steps.get-deploy-stage.outputs.GET_STAGE_RESPONSE }}
+          run: |
+            STAGE_SPEC_ID=$( echo $JSON_RESPONSE | json data.deployment-spec-deploy-artifact-id)
+            echo "STAGE_DEPLOYMENT_ARTIFACT=$STAGE_SPEC_ID" >> $GITHUB_ENV
           
         - name: Trigger OCI DevOps Pipeline
           env:
             DEVOPS_PROJECT_ID: ${{ secrets.DEVOPS_PROJECT_ID }}
             DEVOPS_PIPELINE_ID: ${{ secrets.DEVOPS_PIPELINE_ID }}
             DEPLOY_STAGE_ID: ${{ secrets.DEPLOY_STAGE_ID }}
+            DEPLOY_STAGE_ARTIFACT: ${{env.STAGE_DEPLOYMENT_ARTIFACT}}
+            DEPLOYMENT_SPEC_ID: ${{ env.DEPLOYMENT_ARTIFACT }}
           run: |
-            echo "Triggering OCI DevOps Pipeline..."
-            oci devops deployment create-single-stage-deployment \
-            --pipeline-id $DEVOPS_PIPELINE_ID \
-            --stage-id $DEPLOY_STAGE_ID \
-            --display-name "GitHub Actions Triggered Deployment" 
+            if [ $DEPLOY_STAGE_ARTIFACT == $DEPLOYMENT_SPEC_ID ];
+            then
+              echo "Triggering OCI DevOps Pipeline..."
+              oci devops deployment create-single-stage-deployment \
+              --pipeline-id $DEVOPS_PIPELINE_ID \
+              --stage-id $DEPLOY_STAGE_ID \
+              --display-name "GitHub Actions Triggered Deployment" ;
+            else 
+              exit 1;
+            fi
 
         - name: Cleanup
           run: |
